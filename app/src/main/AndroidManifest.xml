@@ -16,6 +16,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="dev.jhungerford.washwatcher.DisplayMessageActivity"
+            android:label="@string/title_activity_display_message"
+            android:parentActivityName="dev.jhungerford.washwatcher.MyActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dev.jhungerford.washwatcher.MyActivity" />
+        </activity>
     </application>
 
 </manifest>
