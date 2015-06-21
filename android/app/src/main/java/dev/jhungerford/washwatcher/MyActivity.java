@@ -37,7 +37,7 @@ public class MyActivity extends Activity implements SensorEventListener {
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        sensorManager.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
