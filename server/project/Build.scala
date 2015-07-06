@@ -6,7 +6,6 @@ object WashWatcherBuild extends Build {
 
   lazy val root = project.in(file(".")).aggregate(server, interface)
 
-
   lazy val commonSettings = Seq(
     organization := "dev",
     version := "0.0.1",
@@ -18,14 +17,12 @@ object WashWatcherBuild extends Build {
     .settings(commonSettings: _*)
     .settings(
       name := "washwatcher-server",
+      resolvers += "Twitter Maven" at "http://maven.twttr.com",
       libraryDependencies ++= Seq(
-        "org.scalatra" %% "scalatra" % scalatraVersion,
-        "org.scalatra" %% "scalatra-json" % scalatraVersion,
-        "org.json4s" %% "json4s-jackson" % "3.2.6",
-        "ch.qos.logback" % "logback-classic" % "1.1.3",
-        "org.eclipse.jetty" % "jetty-webapp" % "9.3.0.v20150612",
-        "org.scalatra" %% "scalatra-specs2" % scalatraVersion % "test",
-        "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+        "org.apache.thrift" % "libthrift" % "0.9.2",
+        "com.twitter.finatra" %% "finatra-http" % "2.0.0.M2",
+        "com.twitter.finatra" %% "finatra-httpclient" % "2.0.0.M2",
+        "com.twitter.finatra" %% "finatra-logback" % "2.0.0.M2"
       )
     )
 
