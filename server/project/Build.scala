@@ -22,7 +22,8 @@ object WashWatcherBuild extends Build {
         "org.apache.thrift" % "libthrift" % "0.9.2",
         "com.twitter.finatra" %% "finatra-http" % "2.0.0.M2",
         "com.twitter.finatra" %% "finatra-httpclient" % "2.0.0.M2",
-        "com.twitter.finatra" %% "finatra-logback" % "2.0.0.M2"
+        "com.twitter.finatra" %% "finatra-logback" % "2.0.0.M2",
+        "org.apache.commons" % "commons-math3" % "3.5"
       )
     )
 
