@@ -2,7 +2,6 @@ package dev.jhungerford.washwatcher;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,16 +9,16 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.List;
+import dev.jhungerford.washwatcher.model.SensorData;
+import dev.jhungerford.washwatcher.task.SendSensorDataTask;
 
 
 public class MyActivity extends Activity implements SensorEventListener {
 
     public static final String EXTRA_MESSAGE = "dev.jhungerford.washwatcher.MESSAGE";
+    public static final String TAG = "MyActivity";
 
     private TextView xTextView;
     private TextView yTextView;
@@ -64,9 +63,15 @@ public class MyActivity extends Activity implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        xTextView.setText(Float.toString(event.values[0]));
-        yTextView.setText(Float.toString(event.values[1]));
-        zTextView.setText(Float.toString(event.values[2]));
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        new SendSensorDataTask().execute(new SensorData(x, y, z));
+
+        xTextView.setText(Float.toString(x));
+        yTextView.setText(Float.toString(y));
+        zTextView.setText(Float.toString(z));
     }
 
     @Override
