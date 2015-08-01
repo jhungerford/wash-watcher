@@ -5,6 +5,7 @@ import com.twitter.finatra.http.HttpServer
 import com.twitter.finatra.http.filters.CommonFilters
 import com.twitter.finatra.http.routing.HttpRouter
 import com.twitter.finatra.logging.filter.{TraceIdMDCFilter, LoggingMDCFilter}
+import dev.washwatcher.server.api.v1.HelloWorldController
 
 object WashWatcherServerMain extends WashWatcherServer
 

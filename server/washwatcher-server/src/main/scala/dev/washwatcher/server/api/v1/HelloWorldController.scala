@@ -1,4 +1,4 @@
-package dev.washwatcher.server
+package dev.washwatcher.server.api.v1
 
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
