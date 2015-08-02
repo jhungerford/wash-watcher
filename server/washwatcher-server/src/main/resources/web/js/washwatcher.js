@@ -1,5 +1,5 @@
 $(function() {
-  $.get("/api/v1/sensor/magnitudes")
+  $.get("/api/v1/sensor/magnitudes?everySeconds=5")
     .done(function(data) {
       var labels = data.map(function(reading) {
         return reading['when'];

@@ -13,7 +13,14 @@ class SensorController extends Controller {
   }
 
   get("/api/v1/sensor/magnitudes") { request: Request =>
-    val magnitudes = SensorCache.all().map(read => Magnitude(read.when, magnitude(read)))
+    val everyMS = request.getLongParam("everySeconds", 0) * 1000
+
+    val magnitudes = SensorCache.all()
+      .foldLeft((0L, Seq.empty[SensorRead])) { case ((lastWhen, acc), read) =>
+        if (lastWhen + everyMS > read.when) (lastWhen, acc)
+        else (read.when, acc :+ read)
+      }._2
+      .map(read => Magnitude(read.when, magnitude(read)))
     response.ok(magnitudes)
   }
 
