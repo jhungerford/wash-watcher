@@ -17,5 +17,6 @@ class WashWatcherServer extends HttpServer {
       .filter[CommonFilters]
       .add[HelloWorldController]
       .add[SensorController]
+      .add[WebController]
   }
 }
