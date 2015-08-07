@@ -23,7 +23,9 @@ $(function() {
         }]
       };
 
-      var options = {};
+      var options = {
+        animation: false
+      };
       var ctx = document.getElementById("magnitudeChart").getContext("2d");
       var chart = new Chart(ctx);
       chart.Line(chartData, options);
