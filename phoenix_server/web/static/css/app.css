@@ -78,3 +78,36 @@ form.link, form.button {
     border-bottom: 0;
   }
 }
+
+/* Colored boxes like the bootstrap documentation */
+.callout {
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #eee;
+  border-left-width: 5px;
+  border-radius: 3px;
+}
+
+.callout-info {
+  border-left-color: #1b809e;
+}
+
+.callout-info h4 {
+  color: #1b809e;
+}
+
+.callout-error {
+  border-left-color: #a94442;
+}
+
+.callout-error h4 {
+  color: #a94442;
+}
+
+.callout-success {
+  border-left-color: #3c763d;
+}
+
+.callout-success h4 {
+  color: #3c763d;
+}
