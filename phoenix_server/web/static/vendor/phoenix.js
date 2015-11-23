@@ -33,6 +33,11 @@ $(function() {
 
   var lineChart = new Chart(ctx).Line(data, options);
 
+  window.setInterval(function() {
+    lineChart.addData([parseInt(Math.random()*40 + 20), parseInt(Math.random()*40 + 20)], "month");
+    lineChart.removeData();
+  }, 1000);
+
   // $.get("/api/v1/sensor/magnitudes?everySeconds=5")
   //   .done(function(data) {
   //     var labels = data.map(function(reading) {
