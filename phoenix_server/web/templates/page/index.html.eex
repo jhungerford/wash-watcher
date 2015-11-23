@@ -9,3 +9,7 @@
 <div class="callout callout-success">
   <h4>Wash Complete</h4>
 </div>
+
+<div class="magnitude-chart">
+  <canvas id="magnitude-chart-canvas" width="800" height="600"></canvas>
+</div>

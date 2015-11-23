@@ -111,3 +111,8 @@ form.link, form.button {
 .callout-success h4 {
   color: #3c763d;
 }
+
+/* Graph of data from the phone */
+.magnitude-chart {
+  border: 1px solid #eee;
+}
