@@ -17,6 +17,7 @@ defmodule PhoenixServer.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/sensor_rand", SensorController, :random
   end
 
   # Other scopes may use custom stacks.
