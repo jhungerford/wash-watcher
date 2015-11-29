@@ -23,6 +23,6 @@ defmodule PhoenixServer.Router do
   scope "/api", PhoenixServer do
     pipe_through :api # Use the api stack
 
-    get "/sensor/rand", SensorController, :random
+    resources "/sensors", SensorController, except: [:new, :edit]
   end
 end
