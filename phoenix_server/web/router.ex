@@ -24,5 +24,7 @@ defmodule PhoenixServer.Router do
     pipe_through :api # Use the api stack
 
     resources "/sensors", SensorController, except: [:new, :edit]
+
+    get "/magnitudes/since/:timestamp", SensorMagnitudeController, :since
   end
 end
