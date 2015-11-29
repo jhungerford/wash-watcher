@@ -17,11 +17,12 @@ defmodule PhoenixServer.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/sensor_rand", SensorController, :random
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", PhoenixServer do
-  #   pipe_through :api
-  # end
+  scope "/api", PhoenixServer do
+    pipe_through :api # Use the api stack
+
+    get "/sensor/rand", SensorController, :random
+  end
 end
