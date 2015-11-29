@@ -1,5 +1,7 @@
 package dev.jhungerford.washwatcher.model;
 
+import android.provider.Settings.Secure;
+
 /**
  * Created by John on 8/1/2015.
  */
@@ -17,6 +19,6 @@ public class SensorData {
     }
 
     public String toJson() {
-        return String.format("{\"when\":%d,\"x\":%f,\"y\":%f,\"z\":%f}", now, x, y, z);
+        return String.format("{\"sensor\":{\"timestamp\":%d,\"device\":\"%s\",\"x\":%f,\"y\":%f,\"z\":%f}}", now, "android", x, y, z);
     }
 }

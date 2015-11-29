@@ -22,7 +22,7 @@ public class SendSensorDataTask extends AsyncTask<SensorData, Void, Void> {
     protected Void doInBackground(SensorData... sensorData) {
         try {
             for (SensorData data : sensorData) {
-                HttpPost post = new HttpPost("http://192.168.0.102:8888/api/v1/sensor");
+                HttpPost post = new HttpPost("http://192.168.0.106:4000/api/sensors");
                 post.addHeader("Content-Type", "application/json");
                 post.setEntity(new StringEntity(data.toJson()));
 
