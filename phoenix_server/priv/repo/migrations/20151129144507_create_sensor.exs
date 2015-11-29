@@ -3,7 +3,7 @@ defmodule PhoenixServer.Repo.Migrations.CreateSensor do
 
   def change do
     create table(:sensors) do
-      add :timestamp, :integer
+      add :timestamp, :bigint
       add :device, :string
       add :x, :float
       add :y, :float
