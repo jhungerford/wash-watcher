@@ -13,7 +13,6 @@ defmodule PhoenixServer do
       worker(PhoenixServer.Repo, []),
       # Here you could define other workers and supervisors as children
       # worker(PhoenixServer.Worker, [arg1, arg2, arg3]),
-      worker(PhoenixServer.SensorServer, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
