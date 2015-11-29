@@ -9,9 +9,20 @@ defmodule PhoenixServer.SensorMagnitudeController do
     sensors = Repo.all(query)
 
     num = length(sensors)
-    avg = List.foldl(sensors, 0, fn (sensor, acc) -> acc + magnitude(sensor) end) / num
+    value = case num do
+      0 -> 0
+      n -> List.foldl(sensors, 0, fn (sensor, acc) ->
+        diff = gravityDifference(magnitude(sensor))
 
-    json conn, %{num: num, avg: avg}
+        if diff > acc, do: diff, else: acc
+      end)
+    end
+
+    json conn, %{num: num, value: value}
+  end
+
+  def gravityDifference(magnitude) do
+    abs(magnitude - 9.8)
   end
 
   def magnitude(sensor) do

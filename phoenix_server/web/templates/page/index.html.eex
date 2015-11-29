@@ -1,3 +1,4 @@
+<!--
 <div class="callout callout-error">
   <h4>Phone not connected</h4>
 </div>
@@ -9,6 +10,7 @@
 <div class="callout callout-success">
   <h4>Wash Complete</h4>
 </div>
+-->
 
 <div class="magnitude-chart">
   <canvas id="magnitude-chart-canvas" width="800" height="600"></canvas>
