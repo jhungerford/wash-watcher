@@ -7,9 +7,7 @@ import com.twitter.finatra.http.routing.HttpRouter
 import com.twitter.finatra.logging.filter.{LoggingMDCFilter, TraceIdMDCFilter}
 import dev.washwatcher.server.api.v1.{HelloWorldController, SensorController}
 
-object WashWatcherServerMain extends WashWatcherServer
-
-class WashWatcherServer extends HttpServer {
+object WashWatcherServer extends HttpServer {
   override def configureHttp(router: HttpRouter) {
     router
       .filter[LoggingMDCFilter[Request, Response]]

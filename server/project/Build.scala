@@ -9,8 +9,10 @@ object WashWatcherBuild extends Build {
   lazy val commonSettings = Seq(
     organization := "dev",
     version := "0.0.1",
-    scalaVersion := "2.10.5"
+    scalaVersion := "2.11.8"
   )
+
+  lazy val finatraVersion = "2.1.4"
 
   lazy val server = project
     .in(file("washwatcher-server"))
@@ -19,10 +21,7 @@ object WashWatcherBuild extends Build {
       name := "washwatcher-server",
       resolvers += "Twitter Maven" at "http://maven.twttr.com",
       libraryDependencies ++= Seq(
-        "org.apache.thrift" % "libthrift" % "0.9.2",
-        "com.twitter.finatra" %% "finatra-http" % "2.0.0.M2",
-        "com.twitter.finatra" %% "finatra-httpclient" % "2.0.0.M2",
-        "com.twitter.finatra" %% "finatra-logback" % "2.0.0.M2",
+        "com.twitter.finatra" %% "finatra-http" % finatraVersion,
         "org.apache.commons" % "commons-math3" % "3.5"
       )
     )
