@@ -12,6 +12,14 @@ class SensorController extends Controller {
     response.ok
   }
 
+  post("/api/v1/sensors") { reads: Seq[SensorRead] =>
+    reads.foreach { read =>
+      SensorCache.add(read)
+    }
+
+    response.ok
+  }
+
   get("/api/v1/sensor/magnitudes") { request: Request =>
     val everyMS = request.getLongParam("everySeconds", 0) * 1000
 
