@@ -1,8 +1,9 @@
-package dev.washwatcher.server.api.v1
+package dev.washwatcher.server.controller
 
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
-import dev.washwatcher.server.sensor.{SensorCache, SensorRead}
+import dev.washwatcher.server.model.{Magnitude, SensorRead}
+import dev.washwatcher.server.sensor.SensorCache
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
 
 class SensorController extends Controller {
@@ -34,5 +35,3 @@ class SensorController extends Controller {
 
   def magnitude(read: SensorRead): Double = new Vector3D(read.x, read.y, read.z).getNorm
 }
-
-case class Magnitude(when: Long, magnitude: Double)

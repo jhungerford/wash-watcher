@@ -1,9 +1,11 @@
 package dev.washwatcher.server.sensor
 
 import java.util.concurrent.TimeUnit
-import scala.collection.JavaConversions._
 
 import com.google.common.cache.{Cache, CacheBuilder}
+import dev.washwatcher.server.model.SensorRead
+
+import scala.collection.JavaConversions._
 
 object SensorCache {
   val cache: Cache[java.lang.Long, SensorRead] = CacheBuilder.newBuilder()
