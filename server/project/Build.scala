@@ -22,7 +22,8 @@ object WashWatcherBuild extends Build {
       resolvers += "Twitter Maven" at "http://maven.twttr.com",
       libraryDependencies ++= Seq(
         "com.twitter.finatra" %% "finatra-http" % finatraVersion,
-        "org.apache.commons" % "commons-math3" % "3.5"
+        "org.apache.commons" % "commons-math3" % "3.5",
+        "ch.qos.logback" % "logback-classic" % "1.1.6"
       )
     )
 
