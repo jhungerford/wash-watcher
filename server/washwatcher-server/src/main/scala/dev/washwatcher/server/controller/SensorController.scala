@@ -1,7 +1,7 @@
 package dev.washwatcher.server.controller
 
-import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
+import com.twitter.finatra.request.QueryParam
 import dev.washwatcher.server.model.{Magnitude, SensorRead}
 import dev.washwatcher.server.sensor.SensorCache
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
@@ -21,17 +21,25 @@ class SensorController extends Controller {
     response.ok
   }
 
-  get("/api/v1/sensor/magnitudes") { request: Request =>
-    val everyMS = request.getLongParam("everySeconds", 0) * 1000
+  get("/api/v1/sensor/magnitudes") { req: MagnitudesRequest =>
 
-    val magnitudes = SensorCache.all()
-      .foldLeft((0L, Seq.empty[SensorRead])) { case ((lastWhen, acc), read) =>
-        if (lastWhen + everyMS > read.when) (lastWhen, acc)
-        else (read.when, acc :+ read)
-      }._2
-      .map(read => Magnitude(read.when, magnitude(read)))
+    val magnitudes = (req.fromMS+req.everyMS to req.toMS by req.everyMS) map { end =>
+      val reads = SensorCache.between(end - req.everyMS, end)
+
+      val value = reads.isEmpty match {
+        case true => 0.0
+        case false =>
+          reads.foldLeft(0.0) { (sum, read) =>
+            sum + new Vector3D(read.x, read.y, read.z).getNorm
+          } / reads.size
+      }
+
+      Magnitude(end, value)
+    }
+
     response.ok(magnitudes)
   }
 
-  def magnitude(read: SensorRead): Double = new Vector3D(read.x, read.y, read.z).getNorm
 }
+
+case class MagnitudesRequest(@QueryParam everyMS: Long, @QueryParam fromMS: Long, @QueryParam toMS: Long)

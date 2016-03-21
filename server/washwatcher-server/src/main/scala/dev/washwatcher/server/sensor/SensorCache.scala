@@ -30,4 +30,12 @@ object SensorCache {
       .sortBy(_._1)
       .map(_._2)
   }
+
+  def between(start: Long, end: Long): Seq[SensorRead] = {
+    cache.asMap()
+      .filter{ case (timestamp, read) => timestamp >= start && timestamp <= end }
+      .toSeq
+      .sortBy(_._1)
+      .map(_._2)
+  }
 }
