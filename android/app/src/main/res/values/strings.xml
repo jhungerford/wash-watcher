@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">Wash Watcher</string>
-    <string name="ip_label">IP:</string>
-    <string name="port_label">Port:</string>
-    <string name="start_label">Start</string>
-    <string name="stop_label">Stop</string>
-    <string name="default_port">8888</string>
-    <string name="default_ip">192.168.0.107</string>
-</resources>
