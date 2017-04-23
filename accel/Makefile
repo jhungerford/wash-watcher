@@ -1,4 +1,4 @@
-TARGET = wash-watcher
+TARGET = bin/accel
 LIBS = -lm
 CC = gcc
 CFLAGS = -g -Wall
@@ -17,6 +17,7 @@ HEADERS = $(wildcard *.h)
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
 $(TARGET): $(OBJECTS)
+	mkdir -p bin
 	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@
 
 clean:
