@@ -1,3 +1,4 @@
+#include "accel.h"
 #include <stdio.h>
 #include <errno.h>
 #include <wiringPiI2C.h>
@@ -12,7 +13,7 @@ int main() {
     }
 
     int who_are_you = wiringPiI2CReadReg8(fd, REG_WHO_AM_I);
-    printf("Who am I ID: 0x%X", who_are_you);
+    printf("Who am I ID: 0x%X\n", who_are_you);
 
     return 0;
 }
