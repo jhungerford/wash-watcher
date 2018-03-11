@@ -11,9 +11,6 @@ License: [MIT](http://opensource.org/licenses/MIT).
 
 #include <stdint.h>
 
-#define I2C_MODE 0
-#define SPI_MODE 1
-
 // Return values 
 typedef enum
 {
@@ -33,9 +30,7 @@ typedef enum
 
 // Communication stuff
 typedef struct LSM6DS3Core {
-    uint8_t commInterface;
-	uint8_t I2CAddress;
-	uint8_t chipSelectPin;
+	uint8_t i2cAddress;
 } LSM6DS3Core;
 
 status_t beginCore(LSM6DS3Core*);
@@ -104,13 +99,13 @@ struct SensorSettings {
 //settings struct to hold user settings.
 
 typedef struct LSM6DS3 {
-    uint8_t commInterface; // I2C_MODE
-	uint8_t I2CAddress; // 0x6B
-	uint8_t chipSelectPin;
+	uint8_t i2cAddress; // 0x6B
     SensorSettings settings;
     uint16_t allOnesCounter;
     uint16_t nonSuccessCounter;
 } LSM6DS3;
+
+void setDefaults(LSM6DS3*);
 
 //Call to apply SensorSettings
 status_t begin(LSM6DS3*);
