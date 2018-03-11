@@ -49,6 +49,27 @@ sudo make check
 sudo make install
 ```
 
+Clone and install WiringPi ([Instructions](http://wiringpi.com/download-and-install/):
+
+```
+git clone git://git.drogon.net/wiringPi
+cd wiringPi
+./build
+```
+
+Test wiringPi's installation with the following - should print the wiringPi version, and a pinout table:
+```
+gpio -v
+gpio readall
+```
+
 ## Links:
 * [RaspberryPi-GPIO](https://github.com/alanbarr/RaspberryPi-GPIO) - alternative raspi GPIO library
 * [LSM6DS3 Board - examples and datasheets](https://www.sparkfun.com/products/13339)
+* [Raspberry Pi SPI and I2C Tutorial](https://learn.sparkfun.com/tutorials/raspberry-pi-spi-and-i2c-tutorial)
+* [I2C Tutorial](https://learn.sparkfun.com/tutorials/i2c)
+* [Wiring Pi](http://wiringpi.com/reference/i2c-library/)
+
+## License:
+Wash Watcher: MIT
+Wiring Pi is released under the GNU Lesser Public License version 3.
