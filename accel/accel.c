@@ -19,8 +19,9 @@ int init() {
     }
 
     // Enable the accelerometer
-    printf("CTRL1_XL: 0x%X\n", wiringPiI2CReadReg8(fd, REG_CTRL1_XL));
-    printf("CTRL6_C:  0x%X\n", wiringPiI2CReadReg8(fd, REG_CTRL6_C));
+    wiringPiI2CWriteReg8(fd, REG_CTRL9_XL, 0x38);  // x, y, z axies
+    wiringPiI2CWriteReg8(fd, REG_CTRL1_XL, 0x60);  // 416Hz (high performance mode)
+    wiringPiI2CWriteReg8(fd, REG_INT1_CTRL, 0x01); // Acc data ready interrupt on INT1
 
     // Verify the Who am I register to ensure everything is working
     int whoami = wiringPiI2CReadReg8(fd, REG_WHO_AM_I);
@@ -32,10 +33,26 @@ int init() {
     return fd;
 }
 
+int readAxis(int fd, AxisData axis) {
+    int low = wiringPiI2CReadReg8(fd, axis.reg_low);
+    int high = wiringPiI2CReadReg8(fd, axis.reg_high);
+
+    return (high & 0xFF) << 8 | low
+}
+
 int main() {
     int fd = init();
     if (fd < 0) {
         return errno;
+    }
+
+    while (true) {
+        int status = wiringPiI2CReadReg8(fd, REG_STATUS);
+        if ((status & MASK_STATUS_XLDA) == 0) {
+            continue;
+        }
+
+        printf("x: %X  y: %X  z: %X\n", readAxis(XL_X_AXIS), readAxis(XL_Y_AXIS), readAxis(XL_Z_AXIS));
     }
 
     return 0;
