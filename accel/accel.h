@@ -38,6 +38,6 @@ typedef struct AxisData {
     int reg_high;
 } AxisData;
 
-#define XL_X_AXIS {REG_OUTX_L_XL, REG_OUTX_H_XL}
-#define XL_Y_AXIS {REG_OUTY_L_XL, REG_OUTY_H_XL}
-#define XL_Z_AXIS {REG_OUTZ_L_XL, REG_OUTZ_H_XL}
+#define XL_X_AXIS AxisData {REG_OUTX_L_XL, REG_OUTX_H_XL}
+#define XL_Y_AXIS AxisData {REG_OUTY_L_XL, REG_OUTY_H_XL}
+#define XL_Z_AXIS AxisData {REG_OUTZ_L_XL, REG_OUTZ_H_XL}

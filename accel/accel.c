@@ -37,7 +37,7 @@ int readAxis(int fd, AxisData axis) {
     int low = wiringPiI2CReadReg8(fd, axis.reg_low);
     int high = wiringPiI2CReadReg8(fd, axis.reg_high);
 
-    return (high & 0xFF) << 8 | low
+    return (high & 0xFF) << 8 | low;
 }
 
 int main() {
@@ -46,13 +46,13 @@ int main() {
         return errno;
     }
 
-    while (true) {
+    while (1) {
         int status = wiringPiI2CReadReg8(fd, REG_STATUS);
         if ((status & MASK_STATUS_XLDA) == 0) {
             continue;
         }
 
-        printf("x: %X  y: %X  z: %X\n", readAxis(XL_X_AXIS), readAxis(XL_Y_AXIS), readAxis(XL_Z_AXIS));
+        printf("x: %X  y: %X  z: %X\n", readAxis(fd, XL_X_AXIS), readAxis(fd, XL_Y_AXIS), readAxis(fd, XL_Z_AXIS));
     }
 
     return 0;
