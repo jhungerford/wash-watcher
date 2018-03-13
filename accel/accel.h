@@ -32,12 +32,3 @@
 #define REG_OUTY_H_XL 0x2B
 #define REG_OUTZ_L_XL 0x2C
 #define REG_OUTZ_H_XL 0x2D
-
-typedef struct AxisData {
-    int reg_low;
-    int reg_high;
-} AxisData;
-
-#define XL_X_AXIS AxisData {REG_OUTX_L_XL, REG_OUTX_H_XL}
-#define XL_Y_AXIS AxisData {REG_OUTY_L_XL, REG_OUTY_H_XL}
-#define XL_Z_AXIS AxisData {REG_OUTZ_L_XL, REG_OUTZ_H_XL}
