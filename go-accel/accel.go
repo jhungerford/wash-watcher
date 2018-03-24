@@ -9,9 +9,10 @@ import "C"
 import "fmt"
 
 const I2C_ADDR = 0x6B
+const REG_WHO_AM_I = 0x0F
 
 func main() {
-	var fd := C.wiringPiI2CSetup(I2C_ADDR)
-	var whoami = int(C.wiringPiI2CReadReg8(fd))
-	fmt.Printf("Who am I: %d", whoami)
+	var fd = C.wiringPiI2CSetup(I2C_ADDR)
+	var whoami = int(C.wiringPiI2CReadReg8(fd, REG_WHO_AM_I))
+	fmt.Printf("Who am I: 0x%X\n", whoami)
 }

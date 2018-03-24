@@ -4,3 +4,10 @@ build/
 target/
 data/
 
+# Go binaries
+go-accel/*
+!go-accel/**/*.go
+
+hello-cgo/*
+!hello-cgo/**/*.go
+
