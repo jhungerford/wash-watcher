@@ -7,11 +7,11 @@ package main
 
 // Reads accelerometer data out of two registers and returns a single uint
 // with 16 bits of data for one axis.
-uint readAxis(int fd, int low_addr, int high_addr) {
-	uint low = wiringPiI2CReadReg8(fd, low_addr)
-	uint high = wiringPiI2CReadReg8(fd, high_addr)
+unsigned int readAxis(int fd, int low_addr, int high_addr) {
+	unsigned int low = wiringPiI2CReadReg8(fd, low_addr);
+	unsigned int high = wiringPiI2CReadReg8(fd, high_addr);
 
-	return (high & 0xFF) << 8 | (low & 0xFF)
+	return (high & 0xFF) << 8 | (low & 0xFF);
 }
 */
 import "C"
@@ -46,7 +46,7 @@ const REG_STATUS = 0x1E
 const MASK_STATUS_XLDA = 0x01
 
 type reg_axis struct {
-	low, high int
+	low, high C.int
 }
 
 var AXIS_X = reg_axis{REG_OUTX_L_XL, REG_OUTX_H_XL}
@@ -98,7 +98,7 @@ func isAccelReady(fd C.int) bool {
 }
 
 func main() {
-	fd, err = setup()
+	fd, err := setup()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -109,7 +109,7 @@ func main() {
 		if isAccelReady(fd) {
 			reading := readAccel(fd)
 
-			fmt.Printf("Time: %s x: %2X y: %2X z: %2X\n",
+			fmt.Printf("Time: %s x: %04X y: %04X z: %04X\n",
 				reading.time.Format(time.RFC3339),
 				reading.x, reading.y, reading.z)
 		}
