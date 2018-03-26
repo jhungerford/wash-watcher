@@ -14,8 +14,8 @@ unsigned int readAxis(int fd, int low_addr, int high_addr) {
 	return (high & 0xFF) << 8 | (low & 0xFF);
 }
 */
+import "C"
 import (
-	"C"
 	"fmt"
 	"log"
 	"net/http"
