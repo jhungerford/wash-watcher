@@ -111,9 +111,9 @@ func isAccelReady(fd C.int) bool {
 func listenAccel(fd C.int, reading shared_accel_reading) {
 	for {
 		if isAccelReady(fd) {
-			mu.Lock()
+			reading.mu.Lock()
 			reading.reading = readAccel(fd)
-			mu.Unlock()
+			reading.mu.Unlock()
 		}
 	}
 }
@@ -131,7 +131,7 @@ func makeHandler(reading shared_accel_reading) func(w http.ResponseWriter, r *ht
 }
 
 func main() {
-	reading = shared_accel_reading{
+	reading := shared_accel_reading{
 		&sync.Mutex{}, 
 		accel_reading{time.Now(), 0, 0, 0},
 	}
