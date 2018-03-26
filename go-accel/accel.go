@@ -20,6 +20,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"sync"
 )
 
 const I2C_ADDR = 0x6B
@@ -62,6 +63,11 @@ type accel_reading struct {
 	x, y, z uint
 }
 
+type shared_accel_reading struct {
+	mu *sync.Mutex
+	reading accel_reading
+}
+
 // Connect to the LSM6DS3 module, verify the connection, and return the file descriptor.
 // When power is applied to the module, it performs a 20ms boot procedure then configures
 // the accelerometer and gyroscope in power-down mode.
@@ -101,26 +107,42 @@ func isAccelReady(fd C.int) bool {
 	return (status & MASK_STATUS_XLDA) != 0
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello world")
+// Listens to the accelerometer, writing readings to the channel
+func listenAccel(fd C.int, reading shared_accel_reading) {
+	for {
+		if isAccelReady(fd) {
+			mu.Lock()
+			reading.reading = readAccel(fd)
+			mu.Unlock()
+		}
+	}
+}
+
+func makeHandler(reading shared_accel_reading) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		reading.mu.Lock()
+
+		fmt.Fprintf(w, "Time: %s x: %04X y: %04X z: %04X\n",
+			reading.reading.time.Format(time.RFC3339),
+			reading.reading.x, reading.reading.y, reading.reading.z)
+
+		reading.mu.Unlock()
+	}
 }
 
 func main() {
-	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	reading = shared_accel_reading{
+		&sync.Mutex{}, 
+		accel_reading{time.Now(), 0, 0, 0},
+	}
 
 	fd, err := setup()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for {
-		if isAccelReady(fd) {
-			reading := readAccel(fd)
+	go listenAccel(fd, reading)
 
-			fmt.Printf("Time: %s x: %04X y: %04X z: %04X\n",
-				reading.time.Format(time.RFC3339),
-				reading.x, reading.y, reading.z)
-		}
-	}
+	http.HandleFunc("/", makeHandler(reading))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
