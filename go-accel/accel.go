@@ -14,9 +14,13 @@ unsigned int readAxis(int fd, int low_addr, int high_addr) {
 	return (high & 0xFF) << 8 | (low & 0xFF);
 }
 */
-import "C"
-import "fmt"
-import "time"
+import (
+	"C"
+	"fmt"
+	"log"
+	"net/http"
+	"time"
+)
 
 const I2C_ADDR = 0x6B
 
@@ -97,13 +101,18 @@ func isAccelReady(fd C.int) bool {
 	return (status & MASK_STATUS_XLDA) != 0
 }
 
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello world")
+}
+
 func main() {
+	http.HandleFunc("/", handler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+
 	fd, err := setup()
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatal(err)
 	}
-
 
 	for {
 		if isAccelReady(fd) {
