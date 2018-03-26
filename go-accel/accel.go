@@ -64,7 +64,7 @@ type accel_reading struct {
 }
 
 type shared_accel_reading struct {
-	mu *sync.Mutex
+	mu sync.Mutex
 	reading accel_reading
 }
 
@@ -108,7 +108,7 @@ func isAccelReady(fd C.int) bool {
 }
 
 // Listens to the accelerometer, writing readings to the channel
-func listenAccel(fd C.int, reading shared_accel_reading) {
+func listenAccel(fd C.int, reading *shared_accel_reading) {
 	for {
 		if isAccelReady(fd) {
 			reading.mu.Lock()
@@ -118,7 +118,7 @@ func listenAccel(fd C.int, reading shared_accel_reading) {
 	}
 }
 
-func makeHandler(reading shared_accel_reading) func(w http.ResponseWriter, r *http.Request) {
+func makeHandler(reading *shared_accel_reading) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reading.mu.Lock()
 
@@ -131,8 +131,8 @@ func makeHandler(reading shared_accel_reading) func(w http.ResponseWriter, r *ht
 }
 
 func main() {
-	reading := shared_accel_reading{
-		&sync.Mutex{}, 
+	reading := &shared_accel_reading{
+		sync.Mutex{}, 
 		accel_reading{time.Now(), 0, 0, 0},
 	}
 
