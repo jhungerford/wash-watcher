@@ -21,6 +21,8 @@ import (
 	"net/http"
 	"time"
 	"sync"
+	"intbuffer"
+	"math"
 )
 
 const I2C_ADDR = 0x6B
@@ -60,12 +62,18 @@ var AXIS_Z = reg_axis{REG_OUTZ_L_XL, REG_OUTZ_H_XL}
 
 type accel_reading struct {
 	time time.Time
-	x, y, z uint
+	x, y, z int16
 }
 
 type shared_accel_reading struct {
 	mu sync.Mutex
 	reading accel_reading
+}
+
+type shared_variance struct {
+	mu sync.Mutex
+	buffer intbuffer.Buffer
+	variance int
 }
 
 // Connect to the LSM6DS3 module, verify the connection, and return the file descriptor.
@@ -96,9 +104,9 @@ func setup() (C.int, error) {
 func readAccel(fd C.int) accel_reading {
 	return accel_reading{
 		time.Now(),
-		uint(C.readAxis(fd, AXIS_X.low, AXIS_X.high)),
-		uint(C.readAxis(fd, AXIS_Y.low, AXIS_Y.high)),
-		uint(C.readAxis(fd, AXIS_Z.low, AXIS_Z.high)),
+		int16(C.readAxis(fd, AXIS_X.low, AXIS_X.high)),
+		int16(C.readAxis(fd, AXIS_Y.low, AXIS_Y.high)),
+		int16(C.readAxis(fd, AXIS_Z.low, AXIS_Z.high)),
 	}
 }
 
@@ -107,18 +115,40 @@ func isAccelReady(fd C.int) bool {
 	return (status & MASK_STATUS_XLDA) != 0
 }
 
-// Listens to the accelerometer, writing readings to the channel
-func listenAccel(fd C.int, reading *shared_accel_reading) {
+// Listens to the accelerometer, writing readings to the channel and shared variable
+func listenAccel(fd C.int, reading *shared_accel_reading, reading_ch chan accel_reading) {
 	for {
 		if isAccelReady(fd) {
+			read := readAccel(fd)
+
 			reading.mu.Lock()
-			reading.reading = readAccel(fd)
+			reading.reading = read
 			reading.mu.Unlock()
+
+			accel_reading <- read
 		}
 	}
 }
 
-func makeHandler(reading *shared_accel_reading) func(w http.ResponseWriter, r *http.Request) {
+// Computes the variance of the accelerometer over a time window, writing it to the shared variable
+func computeVariance(variance *shared_variance, reading_ch chan accel_reading) {
+	for reading <- reading_ch {
+		variance.mu.Lock()
+		variance.buffer.Add(magnitude(reading))
+		variance.mu.Unlock()
+	}
+}
+
+// Returns the magnitude of the given accelerometer reading
+func magnitude(reading accel_reading) int {
+	return int(math.Sqrt(
+		math.Pow(float64(reading.x, 2)) +
+		math.Pow(float64(reading.y, 2)) +
+		math.Pow(float64(reading.z, 2))
+	))
+}
+
+func makeReadingHandler(reading *shared_accel_reading) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reading.mu.Lock()
 
@@ -130,10 +160,28 @@ func makeHandler(reading *shared_accel_reading) func(w http.ResponseWriter, r *h
 	}
 }
 
+func makeVarianceHandler(variance *shared_variance) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		variance.mu.Lock()
+
+		fmt.Fprintf(w, "%+v", shared_variance.buffer)
+
+		variance.mu.Unlock()
+	}
+}
+
 func main() {
+	reading_ch := make(chan accel_reading)
+
 	reading := &shared_accel_reading{
 		sync.Mutex{}, 
 		accel_reading{time.Now(), 0, 0, 0},
+	}
+
+	variance := &shared_variance{
+		sync.Mutex{}, 
+		intbuffer.New(100),
+		0,
 	}
 
 	fd, err := setup()
@@ -141,8 +189,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	go listenAccel(fd, reading)
+	go listenAccel(fd, reading, reading_ch)
+	go computeVariance(variance, reading_ch)
 
-	http.HandleFunc("/", makeHandler(reading))
+	http.HandleFunc("/reading", makeReadingHandler(reading))
+	http.HandleFunc("/variance", makeVarianceHandler(variance))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
