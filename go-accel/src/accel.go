@@ -163,7 +163,7 @@ func makeVarianceHandler(variance *shared_variance) func(w http.ResponseWriter, 
 	return func(w http.ResponseWriter, r *http.Request) {
 		variance.mu.Lock()
 
-		fmt.Fprintf(w, "%+v", shared_variance.buffer)
+		fmt.Fprintf(w, "%+v", variance.buffer)
 
 		variance.mu.Unlock()
 	}
