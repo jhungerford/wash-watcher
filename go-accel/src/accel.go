@@ -142,9 +142,9 @@ func computeVariance(variance *shared_variance, reading_ch <-chan accel_reading)
 // Returns the magnitude of the given accelerometer reading
 func magnitude(reading accel_reading) int {
 	return int(math.Sqrt(
-		math.Pow(float64(reading.x, 2)) +
-		math.Pow(float64(reading.y, 2)) +
-		math.Pow(float64(reading.z, 2))))
+		math.Pow(float64(reading.x), 2) +
+		math.Pow(float64(reading.y), 2) +
+		math.Pow(float64(reading.z), 2)))
 }
 
 func makeReadingHandler(reading *shared_accel_reading) func(w http.ResponseWriter, r *http.Request) {
