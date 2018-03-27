@@ -72,7 +72,7 @@ type shared_accel_reading struct {
 
 type shared_variance struct {
 	mu sync.Mutex
-	buffer intbuffer.Buffer
+	buffer *intbuffer.Buffer
 	variance int
 }
 

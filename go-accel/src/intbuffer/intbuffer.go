@@ -17,7 +17,7 @@ func New(capacity int) *Buffer {
 
 // Adds the given value to this buffer.  If the buffer is full,
 // the oldest value in this Buffer will be overwritten
-func Add(buffer *Buffer, value int) {
+func (buffer *Buffer) Add(value int) {
 	length := len(buffer.data)
 
 	buffer.data[buffer.write_index] = value
@@ -35,7 +35,7 @@ func Add(buffer *Buffer, value int) {
 // buffer.Fold(func(acc, value int) int {
 //	return acc + value
 // })
-func Fold(buffer *Buffer, f func(acc, value int) int) int {
+func (buffer *Buffer) Fold(f func(acc, value int) int) int {
 	var start, length int
 	if buffer.full {
 		start = buffer.write_index
