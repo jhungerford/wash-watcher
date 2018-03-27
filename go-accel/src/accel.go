@@ -116,7 +116,7 @@ func isAccelReady(fd C.int) bool {
 }
 
 // Listens to the accelerometer, writing readings to the channel and shared variable
-func listenAccel(fd C.int, reading *shared_accel_reading, reading_ch chan accel_reading) {
+func listenAccel(fd C.int, reading *shared_accel_reading, reading_ch chan<- accel_reading) {
 	for {
 		if isAccelReady(fd) {
 			read := readAccel(fd)
@@ -125,14 +125,14 @@ func listenAccel(fd C.int, reading *shared_accel_reading, reading_ch chan accel_
 			reading.reading = read
 			reading.mu.Unlock()
 
-			accel_reading <- read
+			reading_ch <- read
 		}
 	}
 }
 
 // Computes the variance of the accelerometer over a time window, writing it to the shared variable
-func computeVariance(variance *shared_variance, reading_ch chan accel_reading) {
-	for reading <- reading_ch {
+func computeVariance(variance *shared_variance, reading_ch <-chan accel_reading) {
+	for reading := range reading_ch {
 		variance.mu.Lock()
 		variance.buffer.Add(magnitude(reading))
 		variance.mu.Unlock()
