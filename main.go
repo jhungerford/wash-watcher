@@ -202,6 +202,9 @@ func main() {
 	go listenAccel(fd, reading, readingCh)
 	go bufferReading(variance, readingCh)
 
+	fs := http.FileServer(http.Dir("web"))
+
+	http.Handle("/", fs)
 	http.HandleFunc("/reading", makeReadingHandler(reading))
 	http.HandleFunc("/variance", makeVarianceHandler(variance))
 	log.Fatal(http.ListenAndServe(":8080", nil))
