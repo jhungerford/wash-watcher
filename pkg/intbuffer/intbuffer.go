@@ -4,9 +4,9 @@
 package intbuffer
 
 type Buffer struct {
-	data []int
-	write_index int
-	full bool
+	data       []int
+	writeIndex int
+	full       bool
 }
 
 // Creates a new Buffer with the given capacity.  Once the buffer
@@ -20,13 +20,13 @@ func New(capacity int) *Buffer {
 func (buffer *Buffer) Add(value int) {
 	length := len(buffer.data)
 
-	buffer.data[buffer.write_index] = value
+	buffer.data[buffer.writeIndex] = value
 	
-	if !buffer.full && buffer.write_index == length - 1 {
+	if !buffer.full && buffer.writeIndex == length - 1 {
 		buffer.full = true
 	}
 
-	buffer.write_index = (buffer.write_index + 1) % length
+	buffer.writeIndex = (buffer.writeIndex + 1) % length
 }
 
 // Folds over the elements in this buffer from oldest to newest.
@@ -38,11 +38,11 @@ func (buffer *Buffer) Add(value int) {
 func (buffer *Buffer) Fold(f func(acc, value int) int) int {
 	var start, length int
 	if buffer.full {
-		start = buffer.write_index
+		start = buffer.writeIndex
 		length = len(buffer.data)
 	} else {
 		start = 0
-		length = buffer.write_index
+		length = buffer.writeIndex
 	}
 
 	acc := 0
