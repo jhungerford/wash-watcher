@@ -1,0 +1,14 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 4rem;
+    color: #212121;
+}
+
+.done {
+    background-color: #F5F5F5;
+}
+
+.running {
+    background-color: #90CAF9;
+}
