@@ -1,8 +1,8 @@
 setInterval(checkLaundryStatus, 5000);
-let done = true;
+let done = null;
 
 function isDone(variance) {
-  return variance > 1000000;
+  return variance < 1000000;
 }
 
 function setDone() {
