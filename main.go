@@ -21,58 +21,58 @@ import (
 	"net/http"
 	"time"
 	"sync"
-	"github.com/jhungerford/wash-watcher/pkg/intbuffer"
+	"github.com/jhungerford/wash-watcher/pkg/numbuffer"
 	"math"
 )
 
-const I2C_ADDR = 0x6B
+const I2CAddr = 0x6B
 
 // Interrupt 1
-const REG_INT1_CTRL = 0x0D
+const RegInt1Ctrl = 0x0D
 
 // Who am I - constant value register
-const REG_WHOAMI = 0x0F
-const VALUE_WHOAMI = 0x69
+const RegWhoami = 0x0F
+const ValueWhoami = 0x69
 
 // Accelerometer data rate
-const REG_CTRL1_XL = 0x10
+const RegCtrl1Xl = 0x10
 
 // Enable accelerometer axes
-const REG_CTRL9_XL = 0x18
+const RegCtrl9Xl = 0x18
 
 // Accelerometer axis data
-const REG_OUTX_L_XL = 0x28
-const REG_OUTX_H_XL = 0x29
-const REG_OUTY_L_XL = 0x2A
-const REG_OUTY_H_XL = 0x2B
-const REG_OUTZ_L_XL = 0x2C
-const REG_OUTZ_H_XL = 0x2D
+const RegOutxLXl = 0x28
+const RegOutxHXl = 0x29
+const RegOutyLXl = 0x2A
+const RegOutyHXl = 0x2B
+const RegOutzLXl = 0x2C
+const RegOutzHXl = 0x2D
 
 // Status
-const REG_STATUS = 0x1E
-const MASK_STATUS_XLDA = 0x01
+const RegStatus = 0x1E
+const MaskStatusXlda = 0x01
 
-type reg_axis struct {
+type regAxis struct {
 	low, high C.int
 }
 
-var AXIS_X = reg_axis{REG_OUTX_L_XL, REG_OUTX_H_XL}
-var AXIS_Y = reg_axis{REG_OUTY_L_XL, REG_OUTY_H_XL}
-var AXIS_Z = reg_axis{REG_OUTZ_L_XL, REG_OUTZ_H_XL}
+var AxisX = regAxis{RegOutxLXl, RegOutxHXl}
+var AxisY = regAxis{RegOutyLXl, RegOutyHXl}
+var AxisZ = regAxis{RegOutzLXl, RegOutzHXl}
 
-type accel_reading struct {
+type accelReading struct {
 	time time.Time
 	x, y, z int16
 }
 
-type shared_accel_reading struct {
-	mu sync.Mutex
-	reading accel_reading
+type sharedReading struct {
+	mu      sync.Mutex
+	reading accelReading
 }
 
-type shared_variance struct {
+type sharedReadingBuffer struct {
 	mu sync.Mutex
-	buffer *intbuffer.Buffer
+	buffer *numbuffer.Buffer
 	variance int
 }
 
@@ -82,41 +82,41 @@ type shared_variance struct {
 // Returns the file descriptor, or an error if the module could not be set up.
 func setup() (C.int, error) {
 	// Initialize WiringPi
-	fd, err := C.wiringPiI2CSetup(I2C_ADDR)
-	if (fd < 0) {
-		return 0, fmt.Errorf("Error setting up i2c for address 0x%X - %s", I2C_ADDR, err)
+	fd, err := C.wiringPiI2CSetup(I2CAddr)
+	if fd < 0 {
+		return 0, fmt.Errorf("Error setting up i2c for address 0x%X - %s", I2CAddr, err)
 	}
 
 	// Enable the accelerometer
-	C.wiringPiI2CWriteReg8(fd, REG_CTRL9_XL, 0x38)  // accel: x, y, z axes
-	C.wiringPiI2CWriteReg8(fd, REG_CTRL1_XL, 0x60)  // accel: 416Hz (high performance mode)
-	C.wiringPiI2CWriteReg8(fd, REG_INT1_CTRL, 0x01) // accel: data ready interrupt on INT1
+	C.wiringPiI2CWriteReg8(fd, RegCtrl9Xl, 0x38)  // accel: x, y, z axes
+	C.wiringPiI2CWriteReg8(fd, RegCtrl1Xl, 0x60)  // accel: 416Hz (high performance mode)
+	C.wiringPiI2CWriteReg8(fd, RegInt1Ctrl, 0x01) // accel: data ready interrupt on INT1
 	
 	// Verify the whoami register to ensure everything is working
-	var whoami = int(C.wiringPiI2CReadReg8(fd, REG_WHOAMI))
-	if (whoami != VALUE_WHOAMI) {
+	var whoami = int(C.wiringPiI2CReadReg8(fd, RegWhoami))
+	if whoami != ValueWhoami {
 		return 0, fmt.Errorf("Wrong value (0x%X) for the whoami register.", whoami)
 	}
 
 	return fd, nil
 }
 
-func readAccel(fd C.int) accel_reading {
-	return accel_reading{
+func readAccel(fd C.int) accelReading {
+	return accelReading{
 		time.Now(),
-		int16(C.readAxis(fd, AXIS_X.low, AXIS_X.high)),
-		int16(C.readAxis(fd, AXIS_Y.low, AXIS_Y.high)),
-		int16(C.readAxis(fd, AXIS_Z.low, AXIS_Z.high)),
+		int16(C.readAxis(fd, AxisX.low, AxisX.high)),
+		int16(C.readAxis(fd, AxisY.low, AxisY.high)),
+		int16(C.readAxis(fd, AxisZ.low, AxisZ.high)),
 	}
 }
 
 func isAccelReady(fd C.int) bool {
-	var status = C.wiringPiI2CReadReg8(fd, REG_STATUS)
-	return (status & MASK_STATUS_XLDA) != 0
+	var status = C.wiringPiI2CReadReg8(fd, RegStatus)
+	return (status & MaskStatusXlda) != 0
 }
 
 // Listens to the accelerometer, writing readings to the channel and shared variable
-func listenAccel(fd C.int, reading *shared_accel_reading, reading_ch chan<- accel_reading) {
+func listenAccel(fd C.int, reading *sharedReading, reading_ch chan<- accelReading) {
 	for {
 		if isAccelReady(fd) {
 			read := readAccel(fd)
@@ -130,24 +130,39 @@ func listenAccel(fd C.int, reading *shared_accel_reading, reading_ch chan<- acce
 	}
 }
 
-// Computes the variance of the accelerometer over a time window, writing it to the shared variable
-func computeVariance(variance *shared_variance, reading_ch <-chan accel_reading) {
+// Writes the reading to the shared variable
+func bufferReading(readings *sharedReadingBuffer, reading_ch <-chan accelReading) {
 	for reading := range reading_ch {
-		variance.mu.Lock()
-		variance.buffer.Add(magnitude(reading))
-		variance.mu.Unlock()
+		readings.mu.Lock()
+		readings.buffer.Add(magnitude(reading))
+		readings.mu.Unlock()
 	}
 }
 
-// Returns the magnitude of the given accelerometer reading
-func magnitude(reading accel_reading) int {
-	return int(math.Sqrt(
-		math.Pow(float64(reading.x), 2) +
-		math.Pow(float64(reading.y), 2) +
-		math.Pow(float64(reading.z), 2)))
+// Computes the variance over the values in the buffer
+func computeVariance(readings *sharedReadingBuffer) float64 {
+	readings.mu.Lock()
+
+	mean := float64(readings.buffer.Fold(numbuffer.Sum)) / float64(readings.buffer.Length())
+
+	variance := readings.buffer.Fold(func(acc, value float64) float64 {
+		return acc + math.Pow(float64(value) - mean, 2)
+	}) / float64(readings.buffer.Length())
+
+	readings.mu.Unlock()
+
+	return variance
 }
 
-func makeReadingHandler(reading *shared_accel_reading) func(w http.ResponseWriter, r *http.Request) {
+// Returns the magnitude of the given accelerometer reading
+func magnitude(reading accelReading) float64 {
+	return math.Sqrt(
+		math.Pow(float64(reading.x), 2) +
+		math.Pow(float64(reading.y), 2) +
+		math.Pow(float64(reading.z), 2))
+}
+
+func makeReadingHandler(reading *sharedReading) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reading.mu.Lock()
 
@@ -159,27 +174,23 @@ func makeReadingHandler(reading *shared_accel_reading) func(w http.ResponseWrite
 	}
 }
 
-func makeVarianceHandler(variance *shared_variance) func(w http.ResponseWriter, r *http.Request) {
+func makeVarianceHandler(readings *sharedReadingBuffer) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		variance.mu.Lock()
-
-		fmt.Fprintf(w, "%+v", variance.buffer)
-
-		variance.mu.Unlock()
+		fmt.Fprintf(w, "%+v", computeVariance(readings))
 	}
 }
 
 func main() {
-	reading_ch := make(chan accel_reading)
+	readingCh := make(chan accelReading)
 
-	reading := &shared_accel_reading{
-		sync.Mutex{}, 
-		accel_reading{time.Now(), 0, 0, 0},
+	reading := &sharedReading{
+		sync.Mutex{},
+		accelReading{time.Now(), 0, 0, 0},
 	}
 
-	variance := &shared_variance{
-		sync.Mutex{}, 
-		intbuffer.New(100),
+	variance := &sharedReadingBuffer{
+		sync.Mutex{},
+		numbuffer.New(100),
 		0,
 	}
 
@@ -188,8 +199,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	go listenAccel(fd, reading, reading_ch)
-	go computeVariance(variance, reading_ch)
+	go listenAccel(fd, reading, readingCh)
+	go bufferReading(variance, readingCh)
 
 	http.HandleFunc("/reading", makeReadingHandler(reading))
 	http.HandleFunc("/variance", makeVarianceHandler(variance))
