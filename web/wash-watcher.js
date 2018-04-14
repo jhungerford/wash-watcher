@@ -7,14 +7,14 @@ function isDone(variance) {
 
 function setDone() {
   document.getElementById("status").innerHTML = "Done!";
-  document.getElementById("body").classList.add("done");
-  document.getElementById("body").classList.remove("running");
+  document.body.classList.add("done");
+  document.body.classList.remove("running");
 }
 
 function setRunning() {
   document.getElementById("status").innerHTML = "Running...";
-  document.getElementById("body").classList.add("running");
-  document.getElementById("body").classList.remove("done");
+  document.body.classList.add("running");
+  document.body.classList.remove("done");
 }
 
 function checkLaundryStatus() {

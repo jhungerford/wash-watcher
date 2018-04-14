@@ -1,8 +1,13 @@
 body {
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
-    font-size: 4rem;
+    font-size: 6rem;
     color: #212121;
+}
+
+.status {
+    margin: 4rem;
+    text-align: center;
 }
 
 .done {
