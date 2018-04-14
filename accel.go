@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"time"
 	"sync"
-	"intbuffer"
+	"github.com/jhungerford/wash-watcher/pkg/intbuffer"
 	"math"
 )
 
